@@ -1,21 +1,21 @@
-import { readdir, readFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir } from "node:fs/promises";
 import path from "node:path";
 
-const [command, challengeId] = process.argv.slice(2);
+const [, , command, challengeId] = process.argv;
 
-if (command !== "submit") {
-  console.error("Usage: pnpm challenge submit <challengeId>");
+if (!command || !challengeId) {
+  console.error("Usage:");
+  console.error("  pnpm challenge add <challenge-id>");
+  console.error("  pnpm challenge submit <challenge-id>");
   process.exit(1);
 }
 
-if (!challengeId) {
-  console.error("Please provide a challenge ID.");
-  console.error("Example: pnpm challenge submit 001");
-  process.exit(1);
-}
+const rootDir = process.cwd();
+const challengesDir = path.join(rootDir, "challenges");
+const solutionsDir = path.join(rootDir, "solutions");
 
-const challengesDir = path.join(process.cwd() + "/challenges");
 const entries = await readdir(challengesDir);
+
 const challengeDir = entries.find((entry) =>
   entry.startsWith(`${challengeId}-`),
 );
@@ -25,14 +25,45 @@ if (!challengeDir) {
   process.exit(1);
 }
 
-const solutionPath = path.join(challengesDir, challengeDir, "solution.sql");
+const sourceSolution = path.join(challengesDir, challengeDir, "solution.sql");
 
-try {
-  const sql = await readFile(solutionPath, "utf8");
-  console.log(`Submitting challenge ${challengeId}`);
-  console.log(`Solution: ${solutionPath}\n`);
-  console.log(sql);
-} catch {
-  console.error(`No solution.sql found for challenge ${challengeId}`);
-  process.exit(1);
+switch (command) {
+  case "add": {
+    const targetSolution = path.join(
+      solutionsDir,
+      `${challengeId}-solution.sql`,
+    );
+
+    try {
+      await mkdir(solutionsDir, { recursive: true });
+      await copyFile(sourceSolution, targetSolution);
+
+      console.log(`Added solution for challenge ${challengeId}`);
+      console.log(`→ ${targetSolution}`);
+    } catch {
+      console.error(`No solution.sql found for challenge ${challengeId}.`);
+      process.exit(1);
+    }
+
+    break;
+  }
+
+  case "submit": {
+    const solutionPath = path.join(solutionsDir, `${challengeId}-solution.sql`);
+
+    console.log(`Submitting challenge ${challengeId}...`);
+    console.log(`→ ${solutionPath}`);
+
+    // TODO: send solution to backend
+
+    break;
+  }
+
+  default:
+    console.error(`Unknown command: ${command}`);
+    console.error();
+    console.error("Usage:");
+    console.error("  pnpm challenge add <challenge-id>");
+    console.error("  pnpm challenge submit <challenge-id>");
+    process.exit(1);
 }
