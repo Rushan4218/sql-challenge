@@ -1,0 +1,18 @@
+{
+  "name": "sql-challenges",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "challenge": "tsx scripts/challenge.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@11.25.0",
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}

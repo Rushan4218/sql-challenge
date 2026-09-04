@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Challenge solutions
+**/solution.sql
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Temporary files
+tmp/
+temp/
+
+# Test coverage
+coverage/
+
+# pnpm
+.pnpm-debug.log
